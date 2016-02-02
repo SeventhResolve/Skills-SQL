@@ -17,17 +17,38 @@ SELECT brand_name, models FROM models WHERE year = 1964;
 -- 4. Select the model name, brand name, and headquarters for the Ford Mustang 
 --    from the Models and Brands tables.
 
-**Working on this**
-SELECT name AS model_name, brand_name, headquarters FROM models  WHERE name='Mustang'; 
+SELECT models.name, models.brand_name, brands.headquarters 
+FROM models
+JOIN brands
+ON (models.brand_name = brands.name)
+WHERE models.name = 'Mustang';
 
 -- 5. Select all rows for the three oldest brands 
 --    from the Brands table (Hint: you can use LIMIT and ORDER BY).
 
+SELECT * 
+FROM brands
+ORDER BY founded
+LIMIT 3;
+
 -- 6. Count the Ford models in the database (output should be a number).
+
+SELECT COUNT(brand_name)
+FROM models
+WHERE brand_name = 'Ford';
 
 -- 7. Select the name of any and all car brands that are not discontinued.
 
+SELECT name
+FROM brands
+WHERE discontinued IS NULL;
+
 -- 8. Select rows 15-25 of the DB in alphabetical order by model name.
+
+SELECT name
+FROM models
+WHERE id BETWEEN 15 AND 25
+ORDER BY name;
 
 -- 9. Select the brand, name, and year the model's brand was 
 --    founded for all of the models from 1960. Include row(s)
@@ -35,7 +56,13 @@ SELECT name AS model_name, brand_name, headquarters FROM models  WHERE name='Mus
 --    (The year the brand was founded should be NULL if 
 --    the brand is not in the Brands table.)
 
+brands.name (brand name), brands.founded, models.name (model name)
 
+SELECT brands.name, brands.founded, models.name
+FROM models
+    LEFT JOIN brands
+        ON models.brand_name=brands.name
+WHERE founded = 1960;
 
 -- Part 2: Change the following queries according to the specifications. 
 -- Include the answers to the follow up questions in a comment below your
@@ -44,27 +71,34 @@ SELECT name AS model_name, brand_name, headquarters FROM models  WHERE name='Mus
 -- 1. Modify this query so it shows all brands that are not discontinued
 -- regardless of whether they have any models in the models table.
 -- before:
-    -- SELECT b.name,
-    --        b.founded,
-    --        m.name
-    -- FROM Model AS m
-    --   LEFT JOIN brands AS b
-    --     ON b.name = m.brand_name
-    -- WHERE b.discontinued IS NULL;
+    SELECT b.name,
+           b.founded,
+           m.name
+    FROM brands AS b
+      LEFT JOIN models AS m
+        ON b.name = m.brand_name
+    WHERE b.discontinued IS NULL;
 
--- 2. Modify this left join so it only selects models that have brands in the Brands table.
+-- 2. Modify this left join so it only selects models that have brands 
+-- in the Brands table.
 -- before: 
-    -- SELECT m.name,
-    --        m.brand_name,
-    --        b.founded
-    -- FROM Models AS m
-    --   LEFT JOIN Brands AS b
-    --     ON b.name = m.brand_name;
+    SELECT m.name,
+           m.brand_name,
+           b.founded
+    FROM models AS m
+      LEFT JOIN brands AS b
+        ON b.name = m.brand_name;
 
 -- followup question: In your own words, describe the difference between 
 -- left joins and inner joins.
 
--- 3. Modify the query so that it only selects brands that don't have any models in the models table. 
+Inner joins only return results that are members of both tables while left
+joins return not only results that are members of both tables but also
+data that is part of the "left side" table that otherwise would not be
+queryable.
+
+-- 3. Modify the query so that it only selects brands that don't have 
+-- any models in the models table. 
 -- (Hint: it should only show Tesla's row.)
 -- before: 
     -- SELECT name,
